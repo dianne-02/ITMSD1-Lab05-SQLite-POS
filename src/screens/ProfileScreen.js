@@ -1,108 +1,81 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Image, StyleSheet } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import theme from '../theme';
-import FakeStatusBar from '../components/FakeStatusBar';
-import CurvedHeader from '../components/CurvedHeader';
-import TabBar from '../components/TabBar';
+import Header from '../components/Header';
+import BottomNav from '../components/BottomNav';
+import { loadProfile } from '../services/storageService';
 
 const MENU = [
-  { label: 'Personal information', icon: 'person-outline' },
-  { label: 'Saved addresses', icon: 'location-outline' },
-  { label: 'Payment methods', icon: 'card-outline' },
-  { label: 'Notifications', icon: 'notifications-outline' },
-  { label: 'Help & support', icon: 'help-circle-outline' },
+  { icon: 'person-outline', label: 'Edit profile', route: 'EditProfile' },
+  { icon: 'card-outline', label: 'Payment methods', route: 'PaymentMethods' },
+  { icon: 'time-outline', label: 'Ride history', route: 'RideHistory' },
+  { icon: 'settings-outline', label: 'Settings', route: 'Settings' },
+  { icon: 'help-circle-outline', label: 'Help center', route: 'HelpCenter' },
 ];
 
 export default function ProfileScreen({ navigation }) {
-  const onTab = (tab) => {
-    if (tab === 'Profile') return;
-    if (tab === 'Messages') {
-      alert('Messages is not part of this demo.');
-      return;
-    }
-    navigation.navigate(tab);
-  };
+  const [profile, setProfile] = useState({ name: 'Aira Mae Tabudlong', phone: '+63 912 345 6789' });
+
+  useFocusEffect(
+    useCallback(() => {
+      loadProfile().then(setProfile);
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerWrap}>
-        <FakeStatusBar />
-        <CurvedHeader title="My Profile" onBack={() => navigation.navigate('Home')} rightIcon="pencil-outline" />
-      </View>
-
-      <ScrollView contentContainerStyle={styles.scroll}>
-        <View style={styles.avatarRing}>
-          <Image source={require('../../assets/avatar_profile.png')} style={styles.avatar} />
+      <Header />
+      <View style={styles.body}>
+        <View style={styles.avatar}>
+          <Ionicons name="person" size={40} color="#FFFFFF" />
         </View>
-        <Text style={styles.name}>Dianne Ali</Text>
-        <Text style={styles.email}>dianne.ali@email.com</Text>
+        <Text style={styles.name}>{profile.name}</Text>
+        <Text style={styles.phone}>{profile.phone}</Text>
 
-        {/* Points */}
-        <TouchableOpacity style={styles.pointsCard}>
-          <View style={styles.pointsIcon}>
-            <Ionicons name="gift-outline" size={22} color="#B97B4F" />
-          </View>
-          <View style={styles.pointsText}>
-            <Text style={styles.pointsLabel}>Points gained</Text>
-            <Text style={styles.pointsValue}>240 points</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={18} color={theme.colors.indigo} />
-        </TouchableOpacity>
-
-        {/* Menu */}
-        <View style={styles.menuCard}>
-          {MENU.map((item, index) => (
-            <TouchableOpacity key={item.label} style={[styles.menuRow, index > 0 && styles.menuBorder]}>
-              <Ionicons name={item.icon} size={20} color={theme.colors.indigo} />
+        <View style={styles.menu}>
+          {MENU.map((item) => (
+            <TouchableOpacity
+              key={item.label}
+              style={styles.menuRow}
+              activeOpacity={0.7}
+              onPress={() => navigation.navigate(item.route)}
+            >
+              <Ionicons name={item.icon} size={20} color={theme.colors.primary} />
               <Text style={styles.menuLabel}>{item.label}</Text>
-              <Ionicons name="chevron-forward" size={16} color={theme.colors.indigo} />
+              <Ionicons name="chevron-forward" size={18} color={theme.colors.mutedAlt} />
             </TouchableOpacity>
           ))}
         </View>
-      </ScrollView>
+      </View>
 
-      <TabBar active="Profile" onNavigate={onTab} />
+      <BottomNav active="Profile" navigation={navigation} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: theme.colors.background },
-  headerWrap: { backgroundColor: theme.colors.lavender },
-  scroll: { paddingHorizontal: 20, paddingBottom: 16 },
-  avatarRing: {
-    alignSelf: 'center',
-    marginTop: 16,
-    borderRadius: 60,
-    borderWidth: 5,
-    borderColor: 'rgba(169,175,209,0.5)',
-  },
-  avatar: { width: 104, height: 104, borderRadius: 52 },
-  name: { textAlign: 'center', fontSize: 22, fontWeight: '800', color: theme.colors.navy, marginTop: 14 },
-  email: { textAlign: 'center', color: theme.colors.textMuted, fontSize: 13, marginTop: 6 },
-  pointsCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-    backgroundColor: theme.colors.lavenderLight,
-    borderRadius: theme.radius.card,
-    padding: 16,
-    marginTop: 22,
-  },
-  pointsIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: theme.colors.orangeLight,
+  container: { flex: 1, backgroundColor: theme.colors.surface },
+  body: { flex: 1, paddingHorizontal: 24, paddingTop: 16, alignItems: 'center' },
+  avatar: {
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    backgroundColor: theme.colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  pointsText: { flex: 1 },
-  pointsLabel: { color: theme.colors.indigo, fontSize: 12 },
-  pointsValue: { fontSize: 20, fontWeight: '800', color: theme.colors.navy, marginTop: 2 },
-  menuCard: { backgroundColor: theme.colors.white, borderRadius: theme.radius.card, marginTop: 18 },
-  menuRow: { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 16 },
-  menuBorder: { borderTopWidth: 1, borderTopColor: theme.colors.background },
-  menuLabel: { flex: 1, fontSize: 14, color: theme.colors.navy },
+  name: { marginTop: 12, fontFamily: theme.fonts.bold, fontSize: 20, color: theme.colors.ink },
+  phone: { fontFamily: theme.fonts.regular, fontSize: 14, color: theme.colors.muted },
+  menu: { alignSelf: 'stretch', marginTop: 32 },
+  menuRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+    gap: 12,
+  },
+  menuLabel: { flex: 1, fontFamily: theme.fonts.medium, fontSize: 15, color: theme.colors.ink },
 });

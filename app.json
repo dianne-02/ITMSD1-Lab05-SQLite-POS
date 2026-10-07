@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Salazar Home Services",
-    "slug": "itmsd1-lab4",
+    "name": "BAO BAO",
+    "slug": "bao-bao",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
@@ -9,7 +9,10 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "BAO BAO uses your location to show your pickup point and help you choose destinations."
+      }
     },
     "android": {},
     "plugins": [
@@ -17,3 +20,4 @@
     ]
   }
 }
+

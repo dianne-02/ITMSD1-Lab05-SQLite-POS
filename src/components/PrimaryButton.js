@@ -1,22 +1,43 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import theme from '../theme';
 
-export default function PrimaryButton({ title, onPress }) {
+export default function PrimaryButton({ title, icon, onPress, style }) {
   return (
-    <TouchableOpacity style={styles.button} onPress={onPress}>
-      <Text style={styles.text}>{title}</Text>
+    <TouchableOpacity activeOpacity={0.85} onPress={onPress} style={style}>
+      <LinearGradient
+        colors={[theme.colors.primary, theme.colors.primaryLight]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.gradient}
+      >
+        <Text style={styles.text}>{title}</Text>
+        {icon && (
+          <Ionicons name={icon} size={20} color="#FFFFFF" style={styles.icon} />
+        )}
+      </LinearGradient>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  button: {
-    backgroundColor: theme.colors.orange,
-    borderRadius: theme.radius.pill,
-    paddingVertical: 16,
+  gradient: {
+    height: 56,
+    borderRadius: theme.radius.button,
     alignItems: 'center',
-    marginHorizontal: 20,
+    justifyContent: 'center',
+    flexDirection: 'row',
   },
-  text: { color: theme.colors.navy, fontSize: 16, fontWeight: '700' },
+  text: {
+    color: '#FFFFFF',
+    fontFamily: theme.fonts.semiBold,
+    fontSize: 16,
+    letterSpacing: 0.4,
+  },
+  icon: {
+    position: 'absolute',
+    right: 20,
+  },
 });
